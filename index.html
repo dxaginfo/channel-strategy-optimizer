@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Channel Strategy Optimizer</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-chart-line me-2"></i>
+                Channel Strategy Optimizer
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#audience">Audience Migration</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#channels">Channel Comparison</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#roi">ROI Calculator</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#strategy">Strategy Recommendations</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <button id="importDataBtn" class="btn btn-outline-light me-2" type="button">
+                        <i class="fas fa-file-import me-1"></i> Import Data
+                    </button>
+                    <button id="exportDataBtn" class="btn btn-outline-light" type="button">
+                        <i class="fas fa-file-export me-1"></i> Export Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="mb-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Channel Strategy Dashboard</h5>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="lastMonth">Last Month</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary active" id="lastQuarter">Last Quarter</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="lastYear">Last Year</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="customRange">Custom</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- KPI Cards -->
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-muted">Total Audience</h6>
+                                            <h2 class="mb-0" id="totalAudience">4.2M</h2>
+                                            <span class="badge bg-success">+5.2% <i class="fas fa-arrow-up"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-muted">Channel Shift Rate</h6>
+                                            <h2 class="mb-0" id="channelShiftRate">12.8%</h2>
+                                            <span class="badge bg-danger">+3.4% <i class="fas fa-arrow-up"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-muted">Average ROI</h6>
+                                            <h2 class="mb-0" id="averageRoi">2.4x</h2>
+                                            <span class="badge bg-success">+0.3x <i class="fas fa-arrow-up"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-muted">Optimization Score</h6>
+                                            <h2 class="mb-0" id="optimizationScore">76/100</h2>
+                                            <span class="badge bg-warning">-2 pts <i class="fas fa-arrow-down"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-4">
+                                <!-- Channel Distribution Chart -->
+                                <div class="col-md-8 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-header bg-white">
+                                            <h6 class="mb-0">Audience Distribution by Channel</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="channelDistributionChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Top Performing Channels -->
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">Top Channels by Performance</h6>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="performanceMetricDropdown" data-bs-toggle="dropdown">
+                                                    ROI
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="dropdown-item active" href="#">ROI</a></li>
+                                                    <li><a class="dropdown-item" href="#">Audience Growth</a></li>
+                                                    <li><a class="dropdown-item" href="#">Engagement Rate</a></li>
+                                                    <li><a class="dropdown-item" href="#">Cost Efficiency</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="list-group list-group-flush" id="topChannelsList">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span><i class="fas fa-mobile-alt text-primary me-2"></i> Mobile App</span>
+                                                    <span>3.4x</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span><i class="fas fa-laptop text-success me-2"></i> Web Platform</span>
+                                                    <span>2.9x</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span><i class="fas fa-tv text-info me-2"></i> Connected TV</span>
+                                                    <span>2.6x</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span><i class="fas fa-podcast text-warning me-2"></i> Live Streaming</span>
+                                                    <span>2.2x</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span><i class="fas fa-broadcast-tower text-danger me-2"></i> Broadcast TV</span>
+                                                    <span>1.7x</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Audience Migration Section -->
+        <section id="audience" class="mb-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">Audience Migration Analyzer</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <!-- Filter Controls -->
+                                <div class="col-md-12 mb-3">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body p-3">
+                                            <div class="row g-3">
+                                                <div class="col-md-3">
+                                                    <label class="form-label small">Demographic Segment</label>
+                                                    <select class="form-select form-select-sm" id="demographicFilter">
+                                                        <option value="all" selected>All Demographics</option>
+                                                        <option value="18-24">Age 18-24</option>
+                                                        <option value="25-34">Age 25-34</option>
+                                                        <option value="35-44">Age 35-44</option>
+                                                        <option value="45-54">Age 45-54</option>
+                                                        <option value="55+">Age 55+</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label small">Content Type</label>
+                                                    <select class="form-select form-select-sm" id="contentTypeFilter">
+                                                        <option value="all" selected>All Content</option>
+                                                        <option value="live">Live Events</option>
+                                                        <option value="highlights">Highlights</option>
+                                                        <option value="analysis">Analysis</option>
+                                                        <option value="documentary">Documentary</option>
+                                                        <option value="interviews">Interviews</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label small">Time Period</label>
+                                                    <select class="form-select form-select-sm" id="timePeriodFilter">
+                                                        <option value="6m">Last 6 Months</option>
+                                                        <option value="1y" selected>Last Year</option>
+                                                        <option value="2y">Last 2 Years</option>
+                                                        <option value="5y">Last 5 Years</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label small">View Type</label>
+                                                    <select class="form-select form-select-sm" id="viewTypeFilter">
+                                                        <option value="trend" selected>Trend View</option>
+                                                        <option value="migration">Migration View</option>
+                                                        <option value="forecast">Forecast View</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Main Chart -->
+                                <div class="col-md-8 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-header bg-white">
+                                            <h6 class="mb-0">Audience Migration Trends</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="audienceMigrationChart" height="300"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Insights Panel -->
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-header bg-white">
+                                            <h6 class="mb-0">Key Migration Insights</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="alert alert-primary">
+                                                <h6><i class="fas fa-lightbulb me-2"></i>Primary Insight</h6>
+                                                <p class="small mb-0">25% of traditional TV viewers have migrated to streaming platforms in the last 12 months, with the highest rate among the 18-34 demographic.</p>
+                                            </div>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item border-0 ps-0">
+                                                    <span class="badge bg-success me-2">Growth</span>
+                                                    Connected TV viewing increased by 42% year-over-year
+                                                </li>
+                                                <li class="list-group-item border-0 ps-0">
+                                                    <span class="badge bg-danger me-2">Decline</span>
+                                                    Cable subscription viewership decreased by 18% year-over-year
+                                                </li>
+                                                <li class="list-group-item border-0 ps-0">
+                                                    <span class="badge bg-warning me-2">Opportunity</span>
+                                                    Mobile viewers show 3x higher engagement with interactive content
+                                                </li>
+                                                <li class="list-group-item border-0 ps-0">
+                                                    <span class="badge bg-info me-2">Prediction</span>
+                                                    Streaming platforms projected to reach 65% market share by next year
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Migration Flow Diagram -->
+                            <div class="row mt-2">
+                                <div class="col-md-12">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">Audience Flow Between Channels</h6>
+                                            <div>
+                                                <button class="btn btn-sm btn-outline-primary me-2">
+                                                    <i class="fas fa-download me-1"></i> Download as Image
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fas fa-expand-arrows-alt me-1"></i> Full Screen
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="card-body text-center p-0">
+                                            <div id="audienceFlowContainer" style="height: 400px; position: relative;">
+                                                <!-- Placeholder for Sankey diagram or flow visualization -->
+                                                <div class="position-absolute top-50 start-50 translate-middle">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                    <p class="mt-2">Loading audience flow visualization...</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Additional sections like Channel Comparison, ROI Calculator, and Strategy Recommendations would go here -->
+        <!-- But are omitted for brevity in this example -->
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Channel Strategy Optimizer</h5>
+                    <p class="small">A tool for analyzing audience migration, comparing distribution channels, and optimizing channel strategy.</p>
+                </div>
+                <div class="col-md-3">
+                    <h6>Resources</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="docs/user-guide.md" class="text-light">User Guide</a></li>
+                        <li><a href="docs/technical-docs.md" class="text-light">Technical Documentation</a></li>
+                        <li><a href="docs/data-schema.md" class="text-light">Data Schema</a></li>
+                        <li><a href="https://github.com/dxaginfo/channel-strategy-optimizer" class="text-light">GitHub Repository</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6>Contact</h6>
+                    <p class="small mb-0">For questions or support, please open an issue on the GitHub repository.</p>
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="row">
+                <div class="col text-center">
+                    <p class="small mb-0">&copy; 2025 Channel Strategy Optimizer. MIT License.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
